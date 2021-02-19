@@ -3,15 +3,16 @@
   "name": "SPC",
   "description": "Inserting special characters made easy.",
   "version": "1.0.0",
-  "permissions": ["storage"],
+  "permissions": ["contextMenus", "activeTab"],
   "background": {
     "scripts": ["build/background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*"],
-      "js": ["build/injection.js"]
+      "matches": ["https://*/*", "http://*/*"],
+      "css": ["build/main.css"],
+      "js": ["build/shortcut.js"]
     }
   ]
 }
