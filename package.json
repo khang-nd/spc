@@ -1,0 +1,21 @@
+{
+  "name": "spc",
+  "version": "1.0.0",
+  "description": "A browser extension to insert special characters.",
+  "homepage": "",
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "start": "sirv public"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^17.0.0",
+    "@rollup/plugin-node-resolve": "^11.0.0",
+    "react-character-map": "^0.3.0",
+    "rollup": "^2.3.4",
+    "webextension-polyfill": "^0.7.0"
+  },
+  "dependencies": {
+    "sirv-cli": "^1.0.0"
+  }
+}
