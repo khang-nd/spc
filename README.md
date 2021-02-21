@@ -2,7 +2,7 @@
 
 ![spc-screenshot](screenshot.png)
 
-I'm a dev and I use special characters frequently.
+I use special characters frequently and I'm a dev.
 
 ## Installation
 
