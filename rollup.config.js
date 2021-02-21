@@ -48,7 +48,6 @@ function buildConfig(fileName, plugins = []) {
 
 export default [
   buildConfig("background.js"),
-  buildConfig("shortcut.js"),
   buildConfig("main.js", [
     svelte({
       compilerOptions: { dev: !production },

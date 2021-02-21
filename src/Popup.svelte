@@ -1,78 +1,76 @@
 <script>
-  import characters from "./characters.json";
+  import spc from "special-chars";
   import { onMount } from "svelte";
-  import { Tabs, Tab, TabList, TabPanel } from "svelte-tabs";
+  import { Tabs, Tab, TabContent } from "svelte-materialify/dist";
+  import { isFormElement } from "./utils";
 
-  let self;
-  let keyword = "";
-  let isSearching = false;
-  let filteredChars = [];
+  /** @type {Document} */
+  export let document;
+  export let id;
+  export let offset;
 
   const { activeElement } = document;
-  const { top, left, height } = activeElement.getBoundingClientRect();
-  const categories = Object.keys(characters);
-  const allChars = categories.map((category) => characters[category]).flat();
+  const allChars = Object.keys(spc)
+    .map((category) => spc[category])
+    .flat();
+
+  let self;
+  let characters = { ...spc, "🔎": [] };
+  let categories = Object.keys(characters);
+  let searchText = "";
 
   function insert({ target }) {
-    const { tagName } = activeElement;
+    const attribute = isFormElement(activeElement) ? "value" : "textContent";
     activeElement.focus();
-    tagName === "INPUT" || tagName === "TEXTAREA"
-      ? (activeElement.value += target.textContent)
-      : (activeElement.textContent += target.textContent);
+    activeElement[attribute] += target.textContent;
   }
 
   function dismiss() {
     self.remove();
   }
 
-  function search({ key }) {
-    isSearching = true;
-    keyword += key;
-    // filteredChars = allChars.filter(({ name }) => name.includes(keyword));
+  function stopPropagation(event) {
+    event.stopPropagation();
   }
 
   onMount(() => {
-    self.addEventListener("click", (event) => event.stopPropagation());
     document.addEventListener("click", dismiss);
-    activeElement.addEventListener("keypress", search);
+    self.addEventListener("click", stopPropagation);
+    activeElement.addEventListener("click", stopPropagation);
   });
+
+  $: if (searchText) {
+    let count = 0;
+    const condition = ({ name }) =>
+      name.includes(searchText.toUpperCase()) && ++count <= 150;
+    characters["🔎"] = allChars.filter(condition);
+  } else {
+    characters["🔎"] = [];
+  }
 </script>
 
-<div
-  bind:this={self}
-  id="spc"
-  style="top: {top + height}px; left: {left + 3}px"
->
-  <p>
-    Keep typing to find a character
-    <button aria-label="Close" on:click={dismiss}>x</button>
-  </p>
-  <Tabs>
+<main bind:this={self} {id} style="top: {offset.y}px; left: {offset.x}px">
+  <header>
+    <input type="search" placeholder="Search..." bind:value={searchText} />
+    <button aria-label="Close" on:click={dismiss}>✕</button>
+  </header>
+  <Tabs vertical value={searchText ? categories.length - 1 : 0}>
     {#each categories as category}
-      <TabPanel>
-        {#if isSearching}
-          <ul>
-            {#each filteredChars as { char }}
-              <li on:click={insert}>{char}</li>
-            {/each}
-          </ul>
-        {:else}
-          <ul>
-            {#each characters[category] as { char }}
-              <li on:click={insert}>{char}</li>
-            {/each}
-          </ul>
-        {/if}
-      </TabPanel>
+      <TabContent>
+        <ul>
+          {#each characters[category] as { name, char }}
+            <li title={name} on:click={insert}>{char}</li>
+          {/each}
+        </ul>
+      </TabContent>
     {/each}
-
-    <TabList>
+    <div slot="tabs">
       {#each categories as category}
         <Tab>{category}</Tab>
       {/each}
-    </TabList>
+    </div>
   </Tabs>
-</div>
+</main>
 
 <style>
   :root {
@@ -82,24 +80,31 @@
   #spc {
     z-index: 9999;
     position: absolute;
-    background: #f9f9f9;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    background: #f8f8f8;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
     font-size: 16px;
+    padding-bottom: var(--spacing);
   }
 
-  p {
-    margin: var(--spacing);
-    color: #666;
+  header {
+    display: flex;
+    padding: var(--spacing);
+  }
+
+  input[type="search"] {
+    outline-offset: initial;
+    padding: 0.1em 0.3em;
+    margin-right: var(--spacing);
+    background: #fff;
+    box-sizing: border-box;
+    flex-grow: 2;
   }
 
   button[aria-label="Close"] {
-    float: right;
-    font-family: monospace;
     background: #eee;
     color: #000;
     border: none;
     padding: 0;
-    margin: calc(var(--spacing) * -1 + 0.1em);
     width: 30px;
     height: 30px;
     line-height: 0;
@@ -111,18 +116,33 @@
   }
 
   ul {
-    width: 400px;
+    width: 310px;
     height: 300px;
+    margin: 0;
     padding: var(--spacing) !important;
     text-align: center;
+    box-sizing: border-box;
     overflow: auto;
     list-style: none;
-    display: grid;
-    grid-template-columns: repeat(12, auto);
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  li {
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
   }
 
   li:hover {
     background: #eee;
     cursor: default;
+  }
+
+  :global(.s-window) {
+    background: #fff;
   }
 </style>

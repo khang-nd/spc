@@ -1,13 +1,17 @@
 import browser from "webextension-polyfill";
 
-const { contextMenus, tabs } = browser;
+const { contextMenus, tabs, commands } = browser;
 
-contextMenus.create({
-  id: "spc",
-  title: "Special characters",
-  contexts: ["editable"],
+function run() {
+  tabs.executeScript({ file: "/build/main.js" });
+}
+
+contextMenus.removeAll().then(() => {
+  contextMenus.create({
+    id: "spc",
+    title: "Special characters",
+    contexts: ["editable"],
+  });
+  contextMenus.onClicked.addListener(run);
+  commands.onCommand.addListener(run);
 });
-
-contextMenus.onClicked.addListener(() =>
-  tabs.executeScript({ file: "/build/main.js" })
-);

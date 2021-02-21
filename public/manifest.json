@@ -3,16 +3,25 @@
   "name": "SPC",
   "description": "Inserting special characters made easy.",
   "version": "1.0.0",
+  "homepage_url": "https://github.com/khang-nd/spc",
   "permissions": ["contextMenus", "activeTab"],
+  "icons": { "48": "icon.png" },
   "background": {
     "scripts": ["build/background.js"],
     "persistent": false
   },
   "content_scripts": [
     {
-      "matches": ["https://*/*", "http://*/*"],
-      "css": ["build/main.css"],
-      "js": ["build/shortcut.js"]
+      "matches": ["<all_urls>"],
+      "css": ["build/main.css"]
     }
-  ]
+  ],
+  "commands": {
+    "open-popup": {
+      "description": "Activate the extension",
+      "suggested_key": {
+        "default": "Alt+Period"
+      }
+    }
+  }
 }
