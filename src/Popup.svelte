@@ -3,10 +3,10 @@
   import { onMount } from "svelte";
   import { Tabs, Tab, TabContent } from "svelte-materialify/dist";
   import { isFormElement } from "./utils";
+  import { popup } from "./identifiers";
 
   /** @type {Document} */
   export let document;
-  export let id;
   export let offset;
 
   const { activeElement } = document;
@@ -29,6 +29,10 @@
     self.remove();
   }
 
+  function dismissWithESC({ key }) {
+    if (key === "Escape") dismiss();
+  }
+
   function stopPropagation(event) {
     event.stopPropagation();
   }
@@ -36,7 +40,9 @@
   onMount(() => {
     document.addEventListener("click", dismiss);
     self.addEventListener("click", stopPropagation);
+    self.addEventListener("keyup", dismissWithESC);
     activeElement.addEventListener("click", stopPropagation);
+    activeElement.addEventListener("keyup", dismissWithESC);
   });
 
   $: if (searchText) {
@@ -49,7 +55,7 @@
   }
 </script>
 
-<main bind:this={self} {id} style="top: {offset.y}px; left: {offset.x}px">
+<main bind:this={self} id={popup} style="top: {offset.y}px; left: {offset.x}px">
   <header>
     <input type="search" placeholder="Search..." bind:value={searchText} />
     <button aria-label="Close" on:click={dismiss}>✕</button>
@@ -73,11 +79,8 @@
 </main>
 
 <style>
-  :root {
-    --spacing: 0.5em;
-  }
-
   #spc {
+    --spacing: 0.5em;
     z-index: 9999;
     position: absolute;
     background: #f8f8f8;

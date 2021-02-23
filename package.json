@@ -1,6 +1,6 @@
 {
   "name": "spc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A browser extension to insert special characters.",
   "repository": "https://github.com/khang-nd/spc",
   "license": "MIT",

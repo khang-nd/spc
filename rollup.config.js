@@ -40,6 +40,7 @@ function buildConfig(fileName, plugins = []) {
       name: fileName,
       format: "iife",
       sourcemap: false,
+      compact: true,
       file: `public/build/${fileName}`,
     },
     plugins: [resolve(), commonjs(), ...plugins],
@@ -48,6 +49,7 @@ function buildConfig(fileName, plugins = []) {
 
 export default [
   buildConfig("background.js"),
+  buildConfig("main.css.js"),
   buildConfig("main.js", [
     svelte({
       compilerOptions: { dev: !production },
